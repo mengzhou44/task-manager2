@@ -1,0 +1,16 @@
+.field {
+  margin: 10px;
+  padding: 10px;
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.tasks {
+  list-style-type: none;
+  font-size: 20px;
+  text-transform: capitalize;
+  li {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
