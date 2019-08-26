@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { graphql } from 'react-apollo';
 import mutation from '../mutation/signin';
 import styles from './signin.module.scss';
-import {getGraphQLError } from '../utils/get-graphql-error';
+import { getGraphQLError } from '../utils/get-graphql-error';
 
 class SignIn extends Component {
   constructor(props) {
@@ -42,9 +42,9 @@ class SignIn extends Component {
               });
               this.props.history.push('/');
             })
-            .catch(res =>  
-                this.setState({ error: getGraphQLError(res) })
-            );
+            .catch(res => {
+              this.setState({ error: getGraphQLError(res) });
+            });
         }}
       >
         <h3 className={styles.title}>Sign In</h3>

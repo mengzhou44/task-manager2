@@ -6,10 +6,10 @@ import query from '../queries/fetch-user';
 import styles from './user.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
 
-class User extends Component {
+class Dashboard  extends Component {
   renderUser() {
-    const  user = this.props.data;
-    debugger;
+    const { user } = this.props.data;
+
     if (user !== undefined) {
       return (
         <div>
@@ -35,7 +35,7 @@ class User extends Component {
   }
 
   renderTasks() {
-    const  user = this.props.data;
+    const { user } = this.props.data;
     if (user !== undefined) {
       return _.map(user.tasks, item => (
         <li key={item.id}>{item.description}</li>
@@ -67,4 +67,4 @@ export default graphql(query, {
     const id = props.match.params.id;
     return { variables: { id: parseInt(id) } };
   }
-})(User);
+})(Dashboard);

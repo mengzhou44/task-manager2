@@ -1,45 +1,17 @@
-const jwt = require('jsonwebtoken');
+ 
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
 const { executeInTransaction } = require('../data/_index');
 const User = require('../data/User');
-const { signToken } = require('../utils/jwt-helper');
+const { setCookie, clearCookie } = require('../utils/cookie-helper');
 
 class UserBl {
   constructor(trx) {
     this.trx = trx;
   }
-
-  async _generateAuthToken(user) {
-    const token = jwt.sign({ _id: user.id.toString() }, process.env.JWT_SECRET);
-
-    let tokens;
-    if (user.tokens === undefined) {
-      tokens = token;
-    } else {
-      tokens = user.tokens + ',' + token;
-    }
-
-    await User.query(this.trx)
-      .update({ tokens })
-      .where({ id: user.id });
-
-    return token;
-  }
-
-  async _findByCredentials({ email, password }) {
-    const found = await User.query(this.trx).findOne({ email });
-    if (found) {
-      const isMatch = await bcrypt.compare(password, found.password);
-      if (isMatch === true) {
-        return found;
-      }
-    }
-    return null;
-  }
-
-  async signUp({ email, password, firstName, lastName, phone }) {
+ 
+  async signUp({ email, password, firstName, lastName, phone }, res ) {
     return executeInTransaction(this, async () => {
       const user = await this.findByEmail(email);
       if (user !== null) {
@@ -55,71 +27,47 @@ class UserBl {
       });
 
       const token = await signToken(inserted.id);
-      return { token, user: inserted };
+
+      setCookie(token, res);
+      
+      return inserted;
     });
   }
 
-  async signIn({ email, password }) {
+  async signIn({ email, password }, res) {
     return executeInTransaction(this, async () => {
       const user = await this.findByEmail(email);
       if (user === null) {
-        throw new Error('login failed.');
+        throw new Error('Login failed.');
       }
 
       if (password !== user.password) {
         throw new Error('Invalid login credential.');
       }
 
-      // const token = await signToken(inserted.id);
-
-      // res.cookie('id', token, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   maxAge: 1000 * 60 * 60 * 24 * 7
-      // });
-
+      const token = await signToken(user.id);
+      
+      setCookie(token, res);
       return { user };
     });
   }
 
-  async socialSignIn(email) {
-    return executeInTransaction(this, async () => {
-      const user = await this.findByEmail(email);
-      if (user === null) {
-        throw new Error(errors.UNAUTHORIZED);
+
+  async signOut(res) {
+      clearCookie(res);
+      return true; 
+  }
+
+
+  async _findByCredentials({ email, password }) {
+    const found = await User.query(this.trx).findOne({ email });
+    if (found) {
+      const isMatch = await bcrypt.compare(password, found.password);
+      if (isMatch === true) {
+        return found;
       }
-      const token = await this._generateAuthToken(user);
-
-      this._removeSensitive(user);
-
-      return { token, user };
-    });
-  }
-
-  async signOut(user, token) {
-    const found = await User.query(this.trx).findOne({ id: user.id });
-    const temp = found.tokens.split(',');
-
-    const tokens = _.filter(temp, item => item !== token).join(',');
-
-    await User.query(this.trx)
-      .update({ tokens })
-      .where({ id: user.id });
-  }
-
-  async findByIdAndToken(id, token) {
-    const found = await User.query(this.trx).findOne({ id });
-    if (found === undefined) {
-      return null;
     }
-
-    const tokens = found.tokens.split(',');
-    if (tokens.includes(token) === false) {
-      throw new Error();
-    }
-
-    await this._removeSensitive(found);
-    return found;
+    return null;
   }
 
   async findById(id) {

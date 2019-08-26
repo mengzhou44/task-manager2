@@ -10,11 +10,14 @@ import App from './components/app';
 import * as serviceWorker from './serviceWorker';
 
 const cache = new InMemoryCache();
+
 const link = new HttpLink({
-  uri: 'http://localhost:3000/graphql'
+  uri: 'http://localhost:3000/graphql',
+  credentials: 'include'
 });
 
 const client = new ApolloClient({
+  credentials: 'include',
   cache,
   link
 });
