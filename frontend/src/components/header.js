@@ -1,22 +1,29 @@
 import React, { Component } from 'react';
-import { graphql } from 'react-apollo';
-import { Link } from 'react-router-dom';
+
+import { Link, withRouter } from 'react-router-dom';
+import { useQuery, useMutation  } from '@apollo/react-hooks';
 
 import query from '../queries/current-user';
 import mutation from '../mutation/sign-out';
 import styles from './header.module.scss';
 
 class Header extends Component {
+
   onLogoutClick() {
-    this.props.mutate({
-      refetchQueries: [{ query }]
-    });
+    const [logout, {data}] = useMutation(mutation);
+    logout({
+       refetchQueries: [{ query }]
+    })
+    .then(() => {
+        this.props.history.push('/');
+     });
   }
 
   renderButtons() {
-    const { loading, user } = this.props.data;
+    const { loading,  data } = useQuery(query);
+ 
     if (loading) return <div />;
-    if (user) {
+    if (data.user) {
       return (
         <ul>
           <li className={styles.link}>
@@ -27,7 +34,7 @@ class Header extends Component {
     }
     return (
       <ul>
-         <li className={styles.link}>
+        <li className={styles.link}>
           <Link to="/signup">Sign up</Link>
         </li>
         <li className={styles.link}>
@@ -48,4 +55,4 @@ class Header extends Component {
   }
 }
 
-export default graphql(query)(graphql(mutation)(Header));
+export default withRouter(Header);

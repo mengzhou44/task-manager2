@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 
-import { graphql } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import mutation from '../mutation/sign-in';
 import styles from './signin.module.scss';
+
 import { getGraphQLError } from '../utils/get-graphql-error';
 
 class SignIn extends Component {
@@ -27,20 +28,20 @@ class SignIn extends Component {
         onSubmit={e => {
           e.preventDefault();
           const { email, password } = this.state;
-          this.props
-            .mutate({
-              variables: {
-                email,
-                password
-              }
-            })
-            .then(res => {
+          const [signin, { data }] = useMutation(mutation);
+          signin({
+            variables: {
+              email,
+              password
+            }
+          })
+            .then(() => {
               this.setState({
                 email: '',
                 password: '',
                 error: ''
               });
-              this.props.history.push('/');
+              this.props.history.push('/dashboard');
             })
             .catch(res => {
               this.setState({ error: getGraphQLError(res) });
@@ -82,4 +83,4 @@ class SignIn extends Component {
   }
 }
 
-export default graphql(mutation)(SignIn);
+export default SignIn;

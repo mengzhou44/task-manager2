@@ -14,10 +14,9 @@ const query = new GraphQLObjectType({
       type: UserType,
       async resolve(parentValue, args, { req }) {
         const userId = await verifyJwt(req);
-        console.log('userId', userId);
         return await new UserBl().findById(userId);
       }
-    }
+    },
   }
 });
 

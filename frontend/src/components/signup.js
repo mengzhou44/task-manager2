@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-
-import { graphql } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import mutation from '../mutation/sign-up';
 import styles from './signup.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
@@ -31,6 +30,8 @@ class SignUp extends Component {
       <form
         onSubmit={e => {
           e.preventDefault();
+          const [signup, { data }] = useMutation(mutation);
+
           const {
             firstName,
             lastName,
@@ -39,8 +40,8 @@ class SignUp extends Component {
             phone,
             locale
           } = this.state;
-          this.props
-            .mutate({
+
+          signup({
               variables: {
                 email,
                 password,
@@ -148,4 +149,4 @@ class SignUp extends Component {
   }
 }
 
-export default graphql(mutation)(SignUp);
+export default SignUp;
