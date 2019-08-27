@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-  query FetchUser($id: Int!) {
-    user(id: $id) {
+  query  {
+     user  {
       id
       firstName
       lastName

@@ -3,7 +3,8 @@ import { graphql } from 'react-apollo';
 import { Link } from 'react-router-dom';
 
 import query from '../queries/current-user';
-import mutation from '../queries/logout';
+import mutation from '../mutation/sign-out';
+import styles from './header.module.scss';
 
 class Header extends Component {
   onLogoutClick() {
@@ -18,7 +19,7 @@ class Header extends Component {
     if (user) {
       return (
         <ul>
-          <li>
+          <li className={styles.link}>
             <a onClick={this.onLogoutClick.bind(this)}>Logout</a>
           </li>
         </ul>
@@ -26,10 +27,10 @@ class Header extends Component {
     }
     return (
       <ul>
-        <li>
+         <li className={styles.link}>
           <Link to="/signup">Sign up</Link>
         </li>
-        <li>
+        <li className={styles.link}>
           <Link to="/signin">Log in</Link>
         </li>
       </ul>
@@ -38,10 +39,8 @@ class Header extends Component {
   render() {
     return (
       <nav>
-        <div>
-          <Link to="/">
-            Home
-          </Link>
+        <div className={styles.box}>
+          <Link to="/">Home</Link>
           <div>{this.renderButtons()}</div>
         </div>
       </nav>

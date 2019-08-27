@@ -5,7 +5,6 @@ const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
- 
   GraphQLList
 } = graphql;
  
@@ -38,8 +37,8 @@ const TaskType = new GraphQLObjectType({
   })
 });
 
-const SignInResponse = new GraphQLObjectType({
-    name: 'SignInResponse',
+const UserResponse = new GraphQLObjectType({
+    name: 'UserResponse',
     fields: () => ({
       user: { type: UserType }
     })
@@ -49,5 +48,5 @@ const SignInResponse = new GraphQLObjectType({
 module.exports = {
      TaskType,
      UserType,
-     SignInResponse
+     UserResponse
 }

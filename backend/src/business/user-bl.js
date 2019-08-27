@@ -1,17 +1,17 @@
- 
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
 const { executeInTransaction } = require('../data/_index');
 const User = require('../data/User');
 const { setCookie, clearCookie } = require('../utils/cookie-helper');
+const { signToken } = require('../utils/jwt-helper');
 
 class UserBl {
   constructor(trx) {
     this.trx = trx;
   }
- 
-  async signUp({ email, password, firstName, lastName, phone }, res ) {
+
+  async signUp({ email, password, firstName, lastName, phone, locale }, res) {
     return executeInTransaction(this, async () => {
       const user = await this.findByEmail(email);
       if (user !== null) {
@@ -23,14 +23,15 @@ class UserBl {
         lastName,
         email,
         password,
-        phone
+        phone,
+        locale
       });
 
       const token = await signToken(inserted.id);
 
       setCookie(token, res);
-      
-      return inserted;
+
+      return { user: inserted };
     });
   }
 
@@ -46,18 +47,18 @@ class UserBl {
       }
 
       const token = await signToken(user.id);
-      
+
       setCookie(token, res);
       return { user };
     });
   }
 
+  async signOut(userId, res) {
+    clearCookie(res);
+    const user = await new UserBl().findById(userId);
 
-  async signOut(res) {
-      clearCookie(res);
-      return true; 
+    return { user };
   }
-
 
   async _findByCredentials({ email, password }) {
     const found = await User.query(this.trx).findOne({ email });

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { graphql } from 'react-apollo';
 import _ from 'lodash';
 
-import query from '../queries/fetch-user';
+import query from '../queries/current-user';
 import styles from './user.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
 
@@ -62,9 +62,4 @@ class Dashboard  extends Component {
   }
 }
 
-export default graphql(query, {
-  options: props => {
-    const id = props.match.params.id;
-    return { variables: { id: parseInt(id) } };
-  }
-})(Dashboard);
+export default graphql(query)(Dashboard);

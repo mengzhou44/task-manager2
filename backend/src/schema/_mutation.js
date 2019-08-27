@@ -1,18 +1,15 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLNonNull } = graphql;
 
-const { SignInResponse } = require('./_types');
+const { UserResponse } = require('./_types');
 const UserBl = require('../business/user-bl');
-
-const {
-  GraphQLBoolean
-} = graphql;
+const { verifyJwt } = require('../utils/jwt-helper');
 
 const mutation = new GraphQLObjectType({
   name: 'mutation',
   fields: {
     signin: {
-      type: SignInResponse,
+      type: UserResponse,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) }
@@ -21,12 +18,34 @@ const mutation = new GraphQLObjectType({
         return await new UserBl().signIn({ email, password }, res);
       }
     },
-    signout: {
-      type:  GraphQLBoolean,   
-      async resolve(parentValue, args, { res }) {
-        return await new UserBl().signOut(res);
+    signup: {
+      type: UserResponse,
+      args: {
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        phone: { type: new GraphQLNonNull(GraphQLString) },
+        locale: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      async resolve(
+        parentValue,
+        { firstName, lastName, email, password, phone, locale },
+        { res }
+      ) {
+        return await new UserBl().signUp(
+          { firstName, lastName, email, password, phone, locale },
+          res
+        );
       }
     },
+    signout: {
+      type: UserResponse,
+      async resolve(parentValue, args, { req, res }) {
+        const userId = await verifyJwt(req);
+        return await new UserBl().signOut(userId, res);
+      }
+    }
   }
 });
 

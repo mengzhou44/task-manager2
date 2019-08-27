@@ -5,6 +5,8 @@ import { createBrowserHistory } from 'history';
 import Dashboard from './dashboard';
 import Home from './home';
 import SignIn from './signin';
+import SignUp from './signup';
+import Header from './header';
 
 const history = createBrowserHistory();
 
@@ -17,7 +19,8 @@ function App() {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/signin" component={SignIn} />
-            <Route exact path="/Dashboard/:id" component={Dashboard} />
+            <Route exact path="/signup" component={SignUp} />
+            <Route exact path="/dashboard" component={Dashboard} />
           </Switch>
         </div>
       </Router>

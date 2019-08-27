@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { graphql } from 'react-apollo';
-import mutation from '../mutation/signin';
+import mutation from '../mutation/sign-in';
 import styles from './signin.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
 

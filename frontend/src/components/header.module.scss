@@ -1,0 +1,24 @@
+.box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: lightblue;
+  padding: 10px;
+  border-radius: 3px;
+
+  ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    li {
+      margin: 10px;
+    }
+  }
+}
+
+.link {
+  cursor: pointer;
+  text-decoration-line: underline;
+}
