@@ -35,7 +35,6 @@ app.use(
       if (message.includes(':') === true) {
         message = message.split(':')[1].trim();
       }
-
       return {
         message
       };
