@@ -1,86 +1,62 @@
-import React, { Component } from 'react';
-
+import React, { useState } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import mutation from '../mutation/sign-in';
 import styles from './signin.module.scss';
+import { useDispatch } from 'react-redux';
 
+import { setAuthenticated } from '../actions/index';
 import { getGraphQLError } from '../utils/get-graphql-error';
 
-class SignIn extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-      error: ''
-    };
-  }
+function SignIn(props) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [signIn] = useMutation(mutation);
+  const dispatch = useDispatch();
 
-  renderError() {
-    if (this.state.error !== '') {
-      return <label className={styles.errors}>{this.state.error}</label>;
-    }
-  }
+  const renderError = () => {
+    return <label className={styles.errors}> {error} </label>;
+  };
 
-  render() {
-    return (
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          const { email, password } = this.state;
-          const [signin, { data }] = useMutation(mutation);
-          signin({
-            variables: {
-              email,
-              password
-            }
+  return (
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        signIn({
+          variables: {
+            email,
+            password
+          }
+        })
+          .then(() => {
+            setEmail('');
+            setPassword('');
+            dispatch(setAuthenticated(true));
+            props.history.push('/dashboard');
           })
-            .then(() => {
-              this.setState({
-                email: '',
-                password: '',
-                error: ''
-              });
-              this.props.history.push('/dashboard');
-            })
-            .catch(res => {
-              this.setState({ error: getGraphQLError(res) });
-            });
-        }}
-      >
-        <h3 className={styles.title}>Sign In</h3>
-        <div className={styles.field}>
-          <label>Email</label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                email: e.target.value
-              })
-            }
-          />
-        </div>
+          .catch(res => {
+            setError(getGraphQLError(res));
+          });
+      }}
+    >
+      <h3 className={styles.title}>Sign In</h3>
+      <div className={styles.field}>
+        <label>Email</label>
+        <input type="text" onChange={e => setEmail(e.target.value)} />
+      </div>
 
-        <div className={styles.field}>
-          <label>Password</label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                password: e.target.value
-              })
-            }
-          />
-        </div>
-        <div className={styles.field}>{this.renderError()}</div>
-        <div className={styles.field}>
-          <button className={styles.button} type="submit">
-            SIGN IN
-          </button>
-        </div>
-      </form>
-    );
-  }
+      <div className={styles.field}>
+        <label>Password</label>
+        <input type="text" onChange={e => setPassword(e.target.value)} />
+      </div>
+      <div className={styles.field}>{renderError()}</div>
+      <div className={styles.field}>
+        <button className={styles.button} type="submit">
+          SIGN IN
+        </button>
+      </div>
+    </form>
+  );
 }
 
 export default SignIn;

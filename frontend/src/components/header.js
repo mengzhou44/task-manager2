@@ -1,58 +1,58 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Link, withRouter } from 'react-router-dom';
-import { useQuery, useMutation  } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 
-import query from '../queries/current-user';
 import mutation from '../mutation/sign-out';
+import { setAuthenticated } from '../actions/index';
 import styles from './header.module.scss';
 
-class Header extends Component {
+function Header(props) {
+  const dispatch = useDispatch();
+  const [logout] = useMutation(mutation);
+  const auth = useSelector(state => state.auth);
 
-  onLogoutClick() {
-    const [logout, {data}] = useMutation(mutation);
-    logout({
-       refetchQueries: [{ query }]
-    })
-    .then(() => {
-        this.props.history.push('/');
-     });
-  }
-
-  renderButtons() {
-    const { loading,  data } = useQuery(query);
- 
-    if (loading) return <div />;
-    if (data.user) {
+  const renderButtons = () => {
+    if (auth.authenticated === false) {
       return (
         <ul>
           <li className={styles.link}>
-            <a onClick={this.onLogoutClick.bind(this)}>Logout</a>
+            <Link to="/signup">Sign up</Link>
+          </li>
+          <li className={styles.link}>
+            <Link to="/signin">Log in</Link>
           </li>
         </ul>
       );
     }
+
     return (
       <ul>
         <li className={styles.link}>
-          <Link to="/signup">Sign up</Link>
-        </li>
-        <li className={styles.link}>
-          <Link to="/signin">Log in</Link>
+          <a
+            onClick={() => {
+              logout().then(() => {
+                dispatch(setAuthenticated(false));
+                props.history.push('/');
+              });
+            }}
+          >
+            Logout
+          </a>
         </li>
       </ul>
     );
-  }
-  render() {
-    return (
-      <nav>
-        <div className={styles.box}>
-          <Link to="/">Home</Link>
-          <div>{this.renderButtons()}</div>
-        </div>
-      </nav>
-    );
-  }
+  };
+
+  return (
+    <nav>
+      <div className={styles.box}>
+        <Link to="/">Home</Link>
+        <div>{renderButtons()}</div>
+      </div>
+    </nav>
+  );
 }
 
 export default withRouter(Header);

@@ -1,152 +1,93 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import mutation from '../mutation/sign-up';
 import styles from './signup.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
+import { useDispatch } from 'react-redux';
+import { setAuthenticated } from '../actions';
 
-class SignUp extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      firstName: '',
-      lastName: '',
-      phone: '',
-      locale: '',
-      email: '',
-      password: '',
+function SignUp(props) {
+  const dispatch = useDispatch();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [locale, setLocale] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-      error: ''
-    };
-  }
+  const [error, setError] = useState('');
+  const [signup] = useMutation(mutation);
 
-  renderError() {
-    if (this.state.error !== '') {
-      return <label className={styles.errors}>{this.state.error}</label>;
+  const renderError = () => {
+    if (error !== '') {
+      return <label className={styles.errors}>{error}</label>;
     }
-  }
+  };
 
-  render() {
-    return (
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          const [signup, { data }] = useMutation(mutation);
+  return (
+    <form
+      onSubmit={e => {
+        e.preventDefault();
 
-          const {
-            firstName,
-            lastName,
+        signup({
+          variables: {
             email,
             password,
+            firstName,
+            lastName,
             phone,
             locale
-          } = this.state;
+          }
+        })
+          .then(res => {
+            setFirstName('');
+            setLastName('');
+            setEmail('');
+            setPassword('');
+            setPhone('');
+            setLocale('');
+            props.history.push('/dashboard');
+            dispatch(setAuthenticated(true));
+          })
+          .catch(res => setError(getGraphQLError(res)));
+      }}
+    >
+      <h3 className={styles.title}>Sign Up</h3>
+      <div className={styles.field}>
+        <label>First Name </label>
+        <input type="text" onChange={e => setFirstName(e.target.value)} />
+      </div>
+      <div className={styles.field}>
+        <label>Last Name </label>
+        <input type="text" onChange={e => setLastName(e.target.value)} />
+      </div>
 
-          signup({
-              variables: {
-                email,
-                password,
-                firstName,
-                lastName,
-                phone,
-                locale
-              }
-            })
-            .then(res => {
-              this.setState({
-                email: '',
-                password: '',
-                firstName: '',
-                lastName: '',
-                phone: '',
-                locale: '',
-                error: ''
-              });
-              this.props.history.push('/');
-            })
-            .catch(res => {
-              this.setState({ error: getGraphQLError(res) });
-            });
-        }}
-      >
-        <h3 className={styles.title}>Sign Up</h3>
-        <div className={styles.field}>
-          <label>First Name </label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                firstName: e.target.value
-              })
-            }
-          />
-        </div>
-        <div className={styles.field}>
-          <label>Last Name </label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                lastName: e.target.value
-              })
-            }
-          />
-        </div>
+      <div className={styles.field}>
+        <label>Email</label>
+        <input type="text" onChange={e => setEmail(e.target.value)} />
+      </div>
 
-        <div className={styles.field}>
-          <label>Email</label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                email: e.target.value
-              })
-            }
-          />
-        </div>
+      <div className={styles.field}>
+        <label>Password</label>
+        <input type="text" onChange={e => setPassword(e.target.value)} />
+      </div>
+      <div className={styles.field}>
+        <label>Phone</label>
+        <input type="text" onChange={e => setPhone(e.target.value)} />
+      </div>
+      <div className={styles.field}>
+        <label>Locale</label>
+        <input type="text" onChange={e => setLocale(e.target.value)} />
+      </div>
 
-        <div className={styles.field}>
-          <label>Password</label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                password: e.target.value
-              })
-            }
-          />
-        </div>
-        <div className={styles.field}>
-          <label>Phone</label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                phone: e.target.value
-              })
-            }
-          />
-        </div>
-        <div className={styles.field}>
-          <label>Locale</label>
-          <input
-            type="text"
-            onChange={e =>
-              this.setState({
-                locale: e.target.value
-              })
-            }
-          />
-        </div>
-
-        <div className={styles.field}>{this.renderError()}</div>
-        <div className={styles.field}>
-          <button className={styles.button} type="submit">
-            SIGN UP
-          </button>
-        </div>
-      </form>
-    );
-  }
+      <div className={styles.field}>{renderError()}</div>
+      <div className={styles.field}>
+        <button className={styles.button} type="submit">
+          SIGN UP
+        </button>
+      </div>
+    </form>
+  );
 }
 
 export default SignUp;

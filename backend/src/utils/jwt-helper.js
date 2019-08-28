@@ -7,7 +7,6 @@ const signToken = userId => {
 };
 
 const verifyJwt = req => {
-  console.log('step1');
   const cookies = req.cookies;
 
   const token = cookies.id;
@@ -17,9 +16,7 @@ const verifyJwt = req => {
 
   return new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_KEY, async (error, decoded) => {
-      console.log('step2');
       if (error) {
-        console.log('step3');
         reject('401: User is not authenticated');
       }
       const userId = decoded.userId;

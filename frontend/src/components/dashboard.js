@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import _ from 'lodash';
 
@@ -6,9 +6,10 @@ import query from '../queries/current-user';
 import styles from './user.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
 
-class Dashboard  extends Component {
-  renderUser(user) {
-    
+function Dashboard() {
+  const { data, error, loading } = useQuery(query);
+
+  const renderUser = user => {
     if (user !== undefined) {
       return (
         <div>
@@ -31,36 +32,32 @@ class Dashboard  extends Component {
         </div>
       );
     }
-  }
+  };
 
-  renderTasks(user) {
-   
+  const renderTasks = user => {
     if (user !== undefined) {
       return _.map(user.tasks, item => (
         <li key={item.id}>{item.description}</li>
       ));
     }
+  };
+
+  if (loading === true) {
+    return <div>loading...</div>;
   }
 
-  render() {
-    const { data, error,  loading } = useQuery(query);
-
-    if (loading === true) {
-      return <div>loading...</div>;
-    }
-
-    if (error !== undefined) {
-      return <h3>{getGraphQLError(error)}</h3>;
-    }
-    const user = data.user; 
-
-    return (
-      <div>
-        {this.renderUser(user)}
-        <ul className={styles.tasks}>{this.renderTasks(user)}</ul>
-      </div>
-    );
+  if (error !== undefined) {
+    return <h3>{getGraphQLError(error)}</h3>;
   }
+
+  const user = data.user;
+
+  return (
+    <div>
+      {renderUser(user)}
+      <ul className={styles.tasks}>{renderTasks(user)}</ul>
+    </div>
+  );
 }
 
 export default Dashboard;
