@@ -3,15 +3,14 @@ const _ = require('lodash');
 
 const { executeInTransaction } = require('../data/_index');
 const User = require('../data/User');
-const { setCookie, clearCookie } = require('../utils/cookie-helper');
-const { signToken } = require('../utils/jwt-helper');
+const  signToken= require('../utils/sign-token');
 
 class UserBl {
   constructor(trx) {
     this.trx = trx;
   }
 
-  async signUp({ email, password, firstName, lastName, phone, locale }, res) {
+  async signUp({ email, password, firstName, lastName, phone, locale }) {
     return executeInTransaction(this, async () => {
       const user = await this.findByEmail(email);
       if (user !== null) {
@@ -27,15 +26,11 @@ class UserBl {
         locale
       });
 
-      const token = await signToken(inserted.id);
-
-      setCookie(token, res);
-
-      return { user: inserted };
+      return { token: await signToken(inserted.id)};
     });
   }
 
-  async signIn({ email, password }, res) {
+  async signIn({ email, password }) {
     return executeInTransaction(this, async () => {
       const user = await this.findByEmail(email);
       if (user === null) {
@@ -46,19 +41,11 @@ class UserBl {
         throw new Error('Invalid login credential.');
       }
 
-      const token = await signToken(user.id);
-
-      setCookie(token, res);
-      return { user };
+      return { token: await signToken(user.id) };
     });
   }
 
-  async signOut(userId, res) {
-    clearCookie(res);
-    const user = await new UserBl().findById(userId);
 
-    return { user };
-  }
 
   async _findByCredentials({ email, password }) {
     const found = await User.query(this.trx).findOne({ email });

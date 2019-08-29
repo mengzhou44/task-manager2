@@ -1,13 +1,8 @@
 const graphql = require('graphql');
 const TaskBl = require('../business/task-bl');
 
-const {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLList
-} = graphql;
- 
+const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } = graphql;
+
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -37,16 +32,15 @@ const TaskType = new GraphQLObjectType({
   })
 });
 
-const UserResponse = new GraphQLObjectType({
-    name: 'UserResponse',
-    fields: () => ({
-      user: { type: UserType }
-    })
-  });
-   
+const TokenType = new GraphQLObjectType({
+  name: 'Token',
+  fields: () => ({
+    token: { type: GraphQLString }
+  })
+});
 
 module.exports = {
-     TaskType,
-     UserType,
-     UserResponse
-}
+  TaskType,
+  UserType,
+  TokenType
+};
