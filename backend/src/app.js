@@ -7,13 +7,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const schema = require('./schema/schema');
-// const cookieParser = require('cookie-parser');
-const cookieParser = require('cookie-parser');
+const {auth}= require('./utils/auth');
 
 const app = express();
 
 app.use(express.json({ limit: '1mb' }));
-app.use(cookieParser());
 
 app.use(
   cors({
@@ -21,9 +19,7 @@ app.use(
   })
 );
 app.use(helmet());
-
-app.use(require('./routers/public'));
-
+app.use(auth);
 app.use(
   '/graphql',
   graphqlExpress(async (req, res) => ({
