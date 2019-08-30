@@ -1,6 +1,9 @@
 import * as types from "./types";
 
-export const  setAuthenticated = (authenticated) => {
-    return { type: types.SET_AUTHENTICATED, payload: authenticated};
+export const  onSignInSuccess = (token) => {
+    return { type: types.SIGN_IN_SUCCESS, payload: token};
   };
   
+export const  onSignOutSuccess = () => {
+    return { type: types.SIGN_OUT_SUCCESS};
+  };

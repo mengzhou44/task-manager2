@@ -7,7 +7,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const schema = require('./schema/schema');
-const {auth}= require('./utils/auth');
+const { auth } = require('./utils/auth');
 
 const app = express();
 

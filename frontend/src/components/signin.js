@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import mutation from '../mutation/sign-in';
+
 import styles from './signin.module.scss';
 import { useDispatch } from 'react-redux';
-
-import { setAuthenticated } from '../actions/index';
+import { onSignInSuccess } from '../actions/index';
 import { getGraphQLError } from '../utils/get-graphql-error';
 
 function SignIn(props) {
@@ -28,10 +28,11 @@ function SignIn(props) {
             password
           }
         })
-          .then(() => {
+          .then(res => {
+            const { token } = res.data.signIn;
+            dispatch(onSignInSuccess(token));
             setEmail('');
             setPassword('');
-            dispatch(setAuthenticated(true));
             props.history.push('/dashboard');
           })
           .catch(res => {

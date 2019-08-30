@@ -7,7 +7,9 @@ import styles from './user.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
 
 function Dashboard() {
-  const { data, error, loading } = useQuery(query);
+  const { data, error, loading } = useQuery(query, {
+    fetchPolicy: 'network-only'
+  });
 
   const renderUser = user => {
     if (user !== undefined) {

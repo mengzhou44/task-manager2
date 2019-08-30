@@ -2,15 +2,14 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Link, withRouter } from 'react-router-dom';
-import { useMutation } from '@apollo/react-hooks';
-
-import mutation from '../mutation/sign-out';
-import { setAuthenticated } from '../actions/index';
+ 
+import { onSignOutSuccess } from '../actions/index';
 import styles from './header.module.scss';
 
 function Header(props) {
   const dispatch = useDispatch();
-  const [logout] = useMutation(mutation);
+ 
+
   const auth = useSelector(state => state.auth);
 
   const renderButtons = () => {
@@ -32,10 +31,10 @@ function Header(props) {
         <li className={styles.link}>
           <a
             onClick={() => {
-              logout().then(() => {
-                dispatch(setAuthenticated(false));
+      
+                dispatch(onSignOutSuccess());
                 props.history.push('/');
-              });
+              
             }}
           >
             Logout

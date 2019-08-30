@@ -6,6 +6,4 @@ const signToken = userId => {
   });
 };
 
- 
-
 module.exports = signToken;

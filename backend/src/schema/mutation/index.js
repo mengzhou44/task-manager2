@@ -1,8 +1,6 @@
 const graphql = require('graphql');
 const { GraphQLObjectType} = graphql;
 
- 
-const UserBl = require('../../business/user-bl');
 const signIn = require("./_sign-in");  
 const signUp = require("./_sign-up"); 
 

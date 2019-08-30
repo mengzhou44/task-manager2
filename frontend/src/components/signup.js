@@ -4,7 +4,7 @@ import mutation from '../mutation/sign-up';
 import styles from './signup.module.scss';
 import { getGraphQLError } from '../utils/get-graphql-error';
 import { useDispatch } from 'react-redux';
-import { setAuthenticated } from '../actions';
+import { onSignInSuccess } from '../actions';
 
 function SignUp(props) {
   const dispatch = useDispatch();
@@ -40,14 +40,15 @@ function SignUp(props) {
           }
         })
           .then(res => {
+            const { token } = res.data.signUp;
             setFirstName('');
             setLastName('');
             setEmail('');
             setPassword('');
             setPhone('');
             setLocale('');
+            dispatch(onSignInSuccess(token));
             props.history.push('/dashboard');
-            dispatch(setAuthenticated(true));
           })
           .catch(res => setError(getGraphQLError(res)));
       }}

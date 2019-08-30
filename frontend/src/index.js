@@ -1,27 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-import { createStore, applyMiddleware } from 'redux';
+ 
+import { ApolloProvider } from '@apollo/react-hooks';
 import { Provider } from 'react-redux';
-import reduxThunk from 'redux-thunk';
-
+ 
+import createReduxStore from './utils/create-redux-store';
+import createApolloClient  from './utils/create-apollo-client';
 import App from './components/app';
 import * as serviceWorker from './serviceWorker';
 
-import reducers from './reducers';
+const store = createReduxStore();
 
-import ApolloClient, { InMemoryCache } from 'apollo-boost';
-import { ApolloProvider } from '@apollo/react-hooks';
-
-const cache = new InMemoryCache();
-
-const client = new ApolloClient({
-  uri: 'http://localhost:3000/graphql',
-  credentials: 'include',
-  cache
-});
-
-const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
+const client = createApolloClient(store);
 
 ReactDOM.render(
   <ApolloProvider client={client}>
