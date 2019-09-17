@@ -19,13 +19,14 @@ app.use(
   })
 );
 app.use(helmet());
-app.use(auth);
+//app.use(auth);
 app.use(
   '/graphql',
   graphqlExpress(async (req, res) => ({
     schema,
     graphiql: true,
     customFormatErrorFn: error => {
+ 
       let message = error.message.split('\n')[0];
       if (message.includes(':') === true) {
         message = message.split(':')[1].trim();

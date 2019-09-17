@@ -4,11 +4,12 @@ const UserBl = require('../business/user-bl');
 
 const auth = async (req, res, next) => {
   try {
-     
-    const token = req.header('authorization').replace('Bearer ', '');
- 
-    const decoded = jwt.verify(token, process.env.JWT_KEY);
-    req.user = await new UserBl().findById(decoded.userId);
+    if (req.header('authorization')) {
+      const token = req.header('authorization').replace('Bearer ', '');
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      req.user = await new UserBl().findById(decoded.userId);
+    }
+    
   } finally {
     next();
   }

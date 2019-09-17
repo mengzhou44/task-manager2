@@ -19,10 +19,10 @@ module.exports = class TaskBl {
       .where({ id });
   }
 
-  async createTask(task) {
+  async addTask({description, completed, userId}) {
     return await Task.query(this.trx)
     .allowInsert("[description, completed, userId]")
-    .insert(task);
+    .insert({description, completed, userId});
   }
 
   async updateTask(task) {

@@ -17,8 +17,8 @@ exports.seed =async  function(knex, Promise) {
    await knex('tasks').del()
     .then(function () {
       return knex('tasks').insert([
-        {id: 1, description: "buy a pair of glasses", completed: false, user_id: 1},
-        {id: 2, description: "build taks manager with postgres", completed: false, user_id: 1},
+        {description: "buy a pair of glasses", completed: false, user_id: 1},
+        {description: "build taks manager with postgres", completed: false, user_id: 1},
       ]);
     });
 };

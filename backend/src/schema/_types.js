@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const TaskBl = require('../business/task-bl');
 
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLBoolean } = graphql;
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -27,7 +27,7 @@ const TaskType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLInt },
     description: { type: GraphQLString },
-    completed: { type: GraphQLString },
+    completed: { type: GraphQLBoolean },
     userId: { type: GraphQLInt }
   })
 });
